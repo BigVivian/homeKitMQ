@@ -1,2 +1,1 @@
-include 'homeKitMQ-producer'
-
+rootProject 'homeKitMQ'
