@@ -1,2 +1,2 @@
-rootProject 'homeKitMQ-producer'
+rootProject.name= 'homeKitMQ-producer'
 

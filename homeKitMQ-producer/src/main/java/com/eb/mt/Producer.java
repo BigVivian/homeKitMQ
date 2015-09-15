@@ -14,7 +14,7 @@ public class Producer {
 
     public static void main(String [] args){
         DefaultMQProducer producer = new DefaultMQProducer("HomeKitProducer");
-        producer.setNamesrvAddr("127.0.0.1:9876");
+        producer.setNamesrvAddr("192.168.1.194:9876");
         producer.setInstanceName("mmoProducer");
         try {
             producer.start();

@@ -20,23 +20,25 @@ public class Consumer {
     public static void main(String [] args){
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(
                 "homeKitConsumer");
-        consumer.setNamesrvAddr("127.0.0.1:9876");
+        consumer.setNamesrvAddr("192.168.1.194:9876");
         consumer.setInstanceName("musicConsumber");
         try{
             consumer.subscribe("MusicTopic","*");
-        }catch (MQClientException ce){
-            ce.printStackTrace();
             consumer.registerMessageListener(new MessageListenerConcurrently() {
                 @Override
                 public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-                    log.info("recieve message from top {}","MusicTopic");
-                    Message  message = msgs.get(0);
-                    if("MusicTopic".equals(message.getTopic())){
-                        log.info("read from my music top {}",message.getBody().toString());
+                    log.info("recieve message from top {}", "MusicTopic");
+                    Message message = msgs.get(0);
+                    if ("MusicTopic".equals(message.getTopic())) {
+                        log.info("read from my music top {}", message.getBody().toString());
                     }
                     return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                 }
             });
+            consumer.start();
+            log.info("subscribe topic ");
+        }catch (MQClientException ce){
+            ce.printStackTrace();
         }
     }
 }

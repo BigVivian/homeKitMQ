@@ -1,1 +1,1 @@
-rootProject 'homeKitMQ'
+rootProject.name = 'homeKitMQ'
