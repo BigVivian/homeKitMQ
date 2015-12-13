@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package com.eb;
+
+message StbTask{
+ 	sint64 id = 1;
+	string taskName = 2;
+	sint64 createUserId = 3;
+	string taskCompleteReason = 4;
+	string firmwareIds = 5;
+	sint64 batchOperateId = 6;
+	sint32 status = 7;
+	sint32 taskOperateType = 8;
+	string minute = 9;  
+	string hour = 10;
+	string dates = 11;
+	string month = 12;
+	string week = 13;
+	sint32 typetimes = 14;
+	sint32 tasktype = 15;
+	string taskparameter = 16;
+	sint64 createTime = 17;
+	string userGroupMsg = 18;
+	sint32 groupId = 19;
+}	
