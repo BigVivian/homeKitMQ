@@ -8,6 +8,9 @@ import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.common.message.Message;
 import com.alibaba.rocketmq.common.message.MessageExt;
 import com.eb.StbTaskOuterClass;
+import com.eb.model.StbTask;
+import com.eb.util.CompressUtil;
+import com.eb.util.EncryptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,40 +22,45 @@ import java.util.List;
  */
 public class Consumer {
     static Logger log = LoggerFactory.getLogger(Consumer.class);
-    public static void main(String [] args){
+
+    public static void main(String[] args) {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(
                 "homeKitConsumer");
         consumer.setNamesrvAddr("192.168.1.194:9876");
         consumer.setInstanceName("musicConsumber");
         final boolean binary;
-        if(args.length > 0 && "-b".equals(args[0])){
+        if (args.length > 0 && "-b".equals(args[0])) {
             binary = true;
-        }else{
+        } else {
             binary = false;
         }
-        try{
-            consumer.subscribe("user_log","*");
+        final String topicName = "t_stb_task";
+        final Boolean compressTag = false;
+        final Boolean encryptionTag = false;
+        try {
+            consumer.subscribe("t_stb_task", "*");
             consumer.registerMessageListener(new MessageListenerConcurrently() {
                 @Override
                 public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-                    log.info("receive message from top {}", "user_log");
+                    log.info("receive message from top {}", topicName);
                     Message message = msgs.get(0);
-                    try{
-                        if(binary){
-                            StbTaskOuterClass.StbTask task = StbTaskOuterClass.StbTask.parseFrom(message.getBody());
-                            log.info("receive StbTask from broker: " + message.getBody().length);
-                        }else{
-                            log.info("receive StbTask from broker: "+message.getBody().length);
-                        }
-                    }catch (IOException ioe){
-                        ioe.printStackTrace();
+                    byte[] data = message.getBody();
+                    if (encryptionTag) {
+                        //decrypt data
+                        data = EncryptionUtil.decrypt(data);
                     }
+                    if (compressTag) {
+                        //compress data to send
+                        data = CompressUtil.uncompress(data);
+                    }
+                    StbTask task = StbTask.fromBytes(data);
+
                     return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                 }
             });
             consumer.start();
             log.info("subscribe topic ");
-        }catch (MQClientException ce){
+        } catch (MQClientException ce) {
             ce.printStackTrace();
         }
     }
